@@ -1,0 +1,15 @@
+{
+  "name": "@sil/sass-utils",
+  "version": "0.0.1",
+  "description": "Sass Utilities",
+  "main": "index.scss",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "keywords": [
+    "Sass",
+    "Utilities"
+  ],
+  "author": "Sil van Diepen",
+  "license": "MIT"
+}
