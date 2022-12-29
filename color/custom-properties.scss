@@ -1,25 +1,81 @@
 @use "sass:map";
 @use "sass:math";
 
-$colors: (
+//
+//    Defaults
+//
+$prefix: "" !default;
+$color-type: "hsla" !default;
+$color-shades: false !default;
+$color-shade-text: false !default;
+$color-props: false !default;
+$color-text: false !default;
+$colors: () !default;
+$default-colors: (
   "dark": #000000,
   "light": #ffffff,
 ) !default;
 
-@mixin get-props-hsla($name, $value) {
-  --#{$name}-h: #{hue($value)};
-  --#{$name}-s: #{saturation($value)};
-  --#{$name}-l: #{lightness($value)};
-  --#{$name}-a: #{opacity($value)};
-}
-@mixin get-props-rgba($name, $value) {
-  --#{$name}-r: #{hue($value)};
-  --#{$name}-g: #{saturation($value)};
-  --#{$name}-b: #{lightness($value)};
-  --#{$name}-a: #{opacity($value)};
+$theme-colors: map.merge($colors, $default-colors) !default;
+$all-colors: $theme-colors !default;
+
+//
+//    Make Variables
+//
+@function make-variable($name, $value, $var: "") {
+  @if $var != "" {
+    @return "var(--#{get-prefix()}#{$name}, var(--#{get-prefix()}#{$var}, #{$value}))";
+  } @else {
+    @return "var(--#{get-prefix()}#{$name},#{$value})";
+  }
 }
 
-@mixin get-text($value, $name, $dark: black, $light: white) {
+@mixin create-variable($name, $value, $var: "") {
+  @if $var != "" {
+    --#{get-prefix()}#{$name}: var(--#{get-prefix()}#{$var}, #{$value});
+  } @else {
+    --#{get-prefix()}#{$name}: #{$value};
+  }
+}
+
+@function is-var($var, $affix: "") {
+  @if $var != "" {
+    @if $affix != "" {
+      @return "#{$var}-#{$affix}";
+    }
+    @return $var;
+  }
+  @return $var;
+}
+
+//
+//    Get Props
+//
+@mixin get-props-hsla($name, $value, $var: "") {
+  @include create-variable("#{$name}-h", hue($value), is-var($var, "h"));
+  @include create-variable("#{$name}-s", saturation($value), is-var($var, "s"));
+  @include create-variable("#{$name}-l", lightness($value), is-var($var, "l"));
+  @include create-variable("#{$name}-a", opacity($value), is-var($var, "a"));
+}
+@mixin get-props-rgba($name, $value, $var: "") {
+  @include create-variable("#{$name}-r", red($value), is-var($var, "r"));
+  @include create-variable("#{$name}-g", green($value), is-var($var, "g"));
+  @include create-variable("#{$name}-b", blue($value), is-var($var, "b"));
+  @include create-variable("#{$name}-a", opacity($value), is-var($var, "a"));
+}
+
+@mixin get-props($name, $value, $var: "") {
+  @if $color-type == "hsla" {
+    @include get-props-hsla($name, $value, $var);
+  } @else if $color-type == "rgba" {
+    @include get-props-rgba($name, $value, $var);
+  }
+}
+
+//
+//    Get Text
+//
+@mixin get-text($name, $value, $dark: black, $light: white) {
   $contrast-color: get-text-color($value);
   $color-value: $dark;
 
@@ -28,98 +84,136 @@ $colors: (
   } @else {
     $color-value: $light;
   }
-  --#{$name}-text: hsla(
-    var(--#{$contrast-color}-h, #{hue($color-value)}),
-    var(--#{$contrast-color}-s, #{saturation($color-value)}),
-    var(--#{$contrast-color}-l, #{lightness($color-value)}),
-    var(--#{$contrast-color}-a, #{opacity($color-value)})
-  );
+  @if $color-props {
+    @include get-props("#{$name}-text", $color-value, $contrast-color);
+  }
+  @include get-base("#{$name}-text", $color-value);
 }
 
+//
+//   Get Color
+//
 @function get-color-hsla($name, $value) {
   @return hsla(
-    var(--#{$name}-h, #{hue($value)}),
-    var(--#{$name}-s, #{saturation($value)}),
-    var(--#{$name}-a, #{opacity($value)})
-      var(--#{$name}-l, #{lightness($value)})
+    #{make-variable("#{$name}-h", hue($value))},
+    #{make-variable("#{$name}-s", saturation($value))},
+    #{make-variable("#{$name}-l", lightness($value))},
+    #{make-variable("#{$name}-a", opacity($value))}
   );
 }
-
-@mixin get-base-hsla($name, $value) {
-  --#{$name}: #{get-color-hsla($name, $value)};
-}
-@function get-color-rgb($name, $value) {
+@function get-color-rgba($name, $value) {
   @return rgba(
-    var(--#{$name}-r, #{red($value)}),
-    var(--#{$name}-g, #{green($value)}),
-    var(--#{$name}-b, #{blue($value)}),
-    var(--#{$name}-a, #{opacity($value)})
+    #{make-variable("#{$name}-r", red($value))},
+    #{make-variable("#{$name}-g", green($value))},
+    #{make-variable("#{$name}-b", blue($value))},
+    #{make-variable("#{$name}-a", opacity($value))}
   );
 }
 
-@mixin get-base-rgba($name, $value) {
-  --#{$color-name}: #{get-color-rgba($name, $value)};
-}
-
-@mixin get-colors-hsla($colors) {
-  @each $color-name, $color-value in $colors {
-    @include get-props-hsla($color-name, $color-value);
-    @include get-base-hsla($color-name, $color-value);
-    @include get-text(
-      $color-value,
-      $color-name,
-      map.get($colors, "dark"),
-      map.get($colors, "light")
-    );
+@function get-color($name, $value) {
+  @if $color-type == "hsla" {
+    @return get-color-hsla($name, $value);
+  } @else if $color-type == "rgba" {
+    @return get-color-rgba($name, $value);
   }
 }
 
-@mixin get-colors-rgba($colors) {
-  @each $color-name, $color-value in $colors {
-    @include get-props-rgba($color-name, $color-value);
-    @include get-base-rgba($color-name, $color-value);
-    @include get-text(
-      $color-value,
-      $color-name,
-      map.get($colors, "dark"),
-      map.get($colors, "light")
-    );
+//
+//    Get Base
+//
+@mixin get-base-hsla($name, $value, $var: "") {
+  @include create-variable($name, get-color-hsla($name, $value), $var);
+}
+@mixin get-base-rgba($name, $value, $var: "") {
+  @include create-variable($name, get-color-rgba($name, $value), $var);
+}
+
+@mixin get-base($name, $value, $var: "") {
+  @if $color-type == "hsla" {
+    @include get-base-hsla($name, $value, $var);
+  } @else if $color-type == "rgba" {
+    @include get-base-rgba($name, $value, $var);
   }
 }
 
-@mixin get-color-shades($colors, $shades: (), $mix: black) {
+//
+//    Get Colors
+//
+@mixin get-colors($colors) {
   @each $color-name, $color-value in $colors {
-    @each $shade in $shades {
-    
-        @debug math.percentage(math.div($shade,10));
-
-$mix-color: red($mix);
-@debug $mix-color;
-@debug type-of($mix-color);
-
-$color-shade: black;
-        // $color-shade: mix($color-value, $mix, math.percentage($shade));
-      --#{$color-name}-#{$shade}: #{$color-shade};
+    @include get-base($color-name, $color-value);
+    @if $color-props {
+      @include get-props($color-name, $color-value);
+    }
+    @if $color-text {
+      @include get-text(
+        $color-name,
+        $color-value,
+        map.get($colors, "dark"),
+        map.get($colors, "light")
+      );
     }
   }
 }
 
-@mixin get-darkmode($colors, $shades: ()) {
-  --background: #{get-color-hsla("dark", map.get($colors, "dark"))};
-  --foreground: #{get-color-hsla("light", map.get($colors, "light"))};
-  @if length($shades) > 0 {
+//
+//  Get Shades
+//
+@mixin get-color-shades($colors, $shades: (), $mix: black) {
+  @each $color-name, $color-value in $colors {
+    @each $shade in $shades {
+      $color-shade: mix(
+        $color-value,
+        $mix,
+        math.percentage(math.div($shade, 100))
+      );
 
-    @include get-color-shades($colors, $shades, #{map.get($colors, "dark")});
+      $name: "#{$color-name}-#{$shade}";
+      $value: $color-shade;
+
+      @include get-base($name, $value);
+      //   @include get-props($name, $value);
+
+      @if $color-text {
+        @include get-text(
+          $name,
+          $value,
+          map.get($colors, "dark"),
+          map.get($colors, "light")
+        );
+      }
+    }
   }
-  @include get-colors-hsla($colors);
 }
 
-@mixin get-lightmode($colors, $shades: ()) {
-  --background: #{get-color-hsla("light", map.get($colors, "light"))};
-  --foreground: #{get-color-hsla("dark", map.get($colors, "dark"))};
+//
+//  Get Modes
+//
+@mixin get-darkmode($shades: (), $theme-colors: $theme-colors) {
+  $dark: map.get($theme-colors, "dark");
+  $light: map.get($theme-colors, "light");
+
+  @include create-variable("background", #{get-color("dark", $dark)});
+  @include create-variable("foreground", #{get-color("light", $light)});
+  @include get-text("background", $dark);
+  @include get-text("foreground", $light);
 
   @if length($shades) > 0 {
-    @include get-color-shades($colors, $shades, #{map.get($colors, "light")});
+    @include get-color-shades($theme-colors, $shades, $dark);
   }
-  @include get-colors-hsla($colors);
+  @include get-colors($theme-colors);
+}
+
+@mixin get-lightmode($shades: (), $theme-colors: $theme-colors) {
+  $dark: map.get($theme-colors, "dark");
+  $light: map.get($theme-colors, "light");
+  @include create-variable("background", #{get-color("light", $light)});
+  @include create-variable("foreground", #{get-color("dark", $dark)});
+  @include get-text("background", $light);
+  @include get-text("foreground", $dark);
+
+  @if length($shades) > 0 {
+    @include get-color-shades($theme-colors, $shades, $light);
+  }
+  @include get-colors($theme-colors);
 }

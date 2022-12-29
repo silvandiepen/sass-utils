@@ -4,8 +4,10 @@
   "description": "Sass Utilities",
   "main": "index.scss",
   "scripts": {
-    "test": "npm run test:colors",
-    "test:colors": "sass test/colors.scss output/colors.css"
+    "test:colors": "npm run test:colors:rgb && npm run test:colors:hsl && npm run test:colors:prefix",
+    "test:colors:rgb": "sass test/colors.rgb.scss output/colors.rgb.css --no-source-map",
+    "test:colors:hsl": "sass test/colors.hsl.scss output/colors.hsl.css --no-source-map",
+    "test:colors:prefix": "sass test/colors.prefix.scss output/colors.prefix.css --no-source-map"
   },
   "keywords": [
     "Sass",
