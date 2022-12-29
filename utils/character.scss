@@ -169,7 +169,7 @@
   @return $hasUnallowedCharacters;
 }
 
-@function is-number($number) {
+@function is-only-numbers($number) {
   $number-list: character-set(("0-9"));
   @if type-of($number) == "number" or list-contains($number-list, $number) {
     @return true;

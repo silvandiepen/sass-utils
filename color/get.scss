@@ -1,0 +1,16 @@
+@use "sass:math";
+
+@function get-brightness($color) {
+  $red: red($color);
+  $green: green($color);
+  $blue: blue($color);
+  @return abs(math.div(($red + $red + $blue + $green + $green + $green), 6));
+}
+
+@function get-text-color($color) {
+  @if get-brightness($color) > 120 {
+    @return 'dark';
+  } @else {
+    @return 'light';
+  }
+}

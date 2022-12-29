@@ -1,0 +1,125 @@
+@use "sass:map";
+@use "sass:math";
+
+$colors: (
+  "dark": #000000,
+  "light": #ffffff,
+) !default;
+
+@mixin get-props-hsla($name, $value) {
+  --#{$name}-h: #{hue($value)};
+  --#{$name}-s: #{saturation($value)};
+  --#{$name}-l: #{lightness($value)};
+  --#{$name}-a: #{opacity($value)};
+}
+@mixin get-props-rgba($name, $value) {
+  --#{$name}-r: #{hue($value)};
+  --#{$name}-g: #{saturation($value)};
+  --#{$name}-b: #{lightness($value)};
+  --#{$name}-a: #{opacity($value)};
+}
+
+@mixin get-text($value, $name, $dark: black, $light: white) {
+  $contrast-color: get-text-color($value);
+  $color-value: $dark;
+
+  @if $contrast-color == "dark" {
+    $color-value: $dark;
+  } @else {
+    $color-value: $light;
+  }
+  --#{$name}-text: hsla(
+    var(--#{$contrast-color}-h, #{hue($color-value)}),
+    var(--#{$contrast-color}-s, #{saturation($color-value)}),
+    var(--#{$contrast-color}-l, #{lightness($color-value)}),
+    var(--#{$contrast-color}-a, #{opacity($color-value)})
+  );
+}
+
+@function get-color-hsla($name, $value) {
+  @return hsla(
+    var(--#{$name}-h, #{hue($value)}),
+    var(--#{$name}-s, #{saturation($value)}),
+    var(--#{$name}-a, #{opacity($value)})
+      var(--#{$name}-l, #{lightness($value)})
+  );
+}
+
+@mixin get-base-hsla($name, $value) {
+  --#{$name}: #{get-color-hsla($name, $value)};
+}
+@function get-color-rgb($name, $value) {
+  @return rgba(
+    var(--#{$name}-r, #{red($value)}),
+    var(--#{$name}-g, #{green($value)}),
+    var(--#{$name}-b, #{blue($value)}),
+    var(--#{$name}-a, #{opacity($value)})
+  );
+}
+
+@mixin get-base-rgba($name, $value) {
+  --#{$color-name}: #{get-color-rgba($name, $value)};
+}
+
+@mixin get-colors-hsla($colors) {
+  @each $color-name, $color-value in $colors {
+    @include get-props-hsla($color-name, $color-value);
+    @include get-base-hsla($color-name, $color-value);
+    @include get-text(
+      $color-value,
+      $color-name,
+      map.get($colors, "dark"),
+      map.get($colors, "light")
+    );
+  }
+}
+
+@mixin get-colors-rgba($colors) {
+  @each $color-name, $color-value in $colors {
+    @include get-props-rgba($color-name, $color-value);
+    @include get-base-rgba($color-name, $color-value);
+    @include get-text(
+      $color-value,
+      $color-name,
+      map.get($colors, "dark"),
+      map.get($colors, "light")
+    );
+  }
+}
+
+@mixin get-color-shades($colors, $shades: (), $mix: black) {
+  @each $color-name, $color-value in $colors {
+    @each $shade in $shades {
+    
+        @debug math.percentage(math.div($shade,10));
+
+$mix-color: red($mix);
+@debug $mix-color;
+@debug type-of($mix-color);
+
+$color-shade: black;
+        // $color-shade: mix($color-value, $mix, math.percentage($shade));
+      --#{$color-name}-#{$shade}: #{$color-shade};
+    }
+  }
+}
+
+@mixin get-darkmode($colors, $shades: ()) {
+  --background: #{get-color-hsla("dark", map.get($colors, "dark"))};
+  --foreground: #{get-color-hsla("light", map.get($colors, "light"))};
+  @if length($shades) > 0 {
+
+    @include get-color-shades($colors, $shades, #{map.get($colors, "dark")});
+  }
+  @include get-colors-hsla($colors);
+}
+
+@mixin get-lightmode($colors, $shades: ()) {
+  --background: #{get-color-hsla("light", map.get($colors, "light"))};
+  --foreground: #{get-color-hsla("dark", map.get($colors, "dark"))};
+
+  @if length($shades) > 0 {
+    @include get-color-shades($colors, $shades, #{map.get($colors, "light")});
+  }
+  @include get-colors-hsla($colors);
+}

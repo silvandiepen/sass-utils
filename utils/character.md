@@ -15,4 +15,4 @@
 
 ### has-unallowed-characters
 
-### is-number
+### is-only-numbers

@@ -4,12 +4,16 @@
   "description": "Sass Utilities",
   "main": "index.scss",
   "scripts": {
-    "test": "npm run test"
+    "test": "npm run test:colors",
+    "test:colors": "sass test/colors.scss output/colors.css"
   },
   "keywords": [
     "Sass",
     "Utilities"
   ],
   "author": "Sil van Diepen",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "sass": "^1.57.1"
+  }
 }
