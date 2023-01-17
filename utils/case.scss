@@ -33,6 +33,17 @@ $lowercase-letters: null;
   @return $isLowerCaseLetter;
 }
 
+@function is-upper-case($char) {
+  $isUpperCaseLetter: false;
+  @if $uppercase-letters == null {
+    $uppercase-letters: list-to-str(character-set("A-Z"), "") !global;
+  }
+  @if str-contains($uppercase-letters, $char) {
+    $isUpperCaseLetter: true;
+  }
+  @return $isUpperCaseLetter;
+}
+
 @function is-letter($char) {
   $isLetter: false;
   @if $lowercase-letters == null {
@@ -46,6 +57,25 @@ $lowercase-letters: null;
   @return $isLetter;
 }
 
+/// remove-double-spaces
+// --------------------------
+/// Reduce the double spaces from a string to a single one
+///
+/// @access public
+/// @group case utilities
+/// @param {string} $string
+/// @return {string}
+///
+
+@function remove-double-spaces($str) {
+  @if str-contains($str, "  ") {
+    $str: str-replace($str, "  ", " ");
+    @return remove-double-spaces($str);
+  } @else {
+    @return $str;
+  }
+}
+
 /// Kebab Case function
 // --------------------------
 /// Convert any string into a kebabcase string.
@@ -55,15 +85,48 @@ $lowercase-letters: null;
 /// @param {string} $string
 /// @return {string}
 ///
+///
+///
+$allowed-characters: character-set(("a-Z", "0-9", (" ", "-")), "string");
+$uppercase-characters: character-set(("A-Z"), "string");
 
 @function kebabCase($str) {
-  $new-str: allowed-characters(
-    to-lower-case(safe-characters($str)),
-    ("a-Z", "0-9", " ")
-  );
+  $letters: to-letter-list($str);
+  $new-str: "";
+  @for $i from 1 through length($letters) {
+    $letter: nth($letters, $i);
 
-  @return str-replace($new-str, " ", "-");
+    @if str-contains($allowed-characters, $letter) {
+      @if str-contains($uppercase-characters, $letter) {
+        $letter: " #{to-lower-case($letter)}";
+      }
+
+      $new-str: "#{$new-str}#{$letter}";
+    }
+  }
+
+  @return str-replace(remove-double-spaces($new-str),' ','-');
 }
+
+// @function kebabCase($str) {
+//   $letters: to-letter-list(
+//     allowed-characters(safe-characters($str), ("a-Z", "0-9", " ","-"))
+//   );
+
+//   $new-letters: ();
+//   @for $i from 1 through length($letters) {
+//     @if is-upper-case(nth($letters, $i)) {
+//       $new-letters: append($new-letters, unquote(" "));
+//       $new-letters: append($new-letters, to-lower-case(nth($letters, $i)));
+//     } @else {
+//       $new-letters: append($new-letters, nth($letters, $i));
+//     }
+//   }
+
+//   $new-str: remove-double-spaces(list-to-str($new-letters, ""));
+
+//   @return str-replace($new-str, " ", "-");
+// }
 
 /// Sentence case function
 // --------------------------

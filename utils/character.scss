@@ -1,3 +1,5 @@
+@use "sass:map";
+
 // add-length
 // --------------------------
 /// Get a string and add extra spaces to make the string longer.
@@ -85,9 +87,9 @@
 /// @output List
 /// @parameter List
 
-@function character-set($characters) {
+@function character-set($characters, $return: "list") {
   $new-characters: ();
-  $return-default: true;
+  $returnString: "";
   $character-set: (
     "numbers": "01234556789",
     "lowercase": "abcdefghijklmnopqrstuvwxyz",
@@ -95,41 +97,24 @@
   );
   @each $char in $characters {
     @if $char == "a-Z" {
-      $return-default: false;
-      $new-characters: join(
-        $new-characters,
-        to-letter-list(map-get($character-set, "lowercase"))
-      );
-      $new-characters: join(
-        $new-characters,
-        to-letter-list(map-get($character-set, "uppercase"))
-      );
+      $returnString: "#{$returnString}#{map-get($character-set,'lowercase')}#{map-get($character-set, 'uppercase')}}";
     } @else if $char == "a-z" {
-      $return-default: false;
-      $new-characters: join(
-        $new-characters,
-        to-letter-list(map-get($character-set, "lowercase"))
-      );
+      $returnString: "#{$returnString}#{map.get($character-set,'lowercase')}";
     } @else if $char == "A-Z" {
-      $return-default: false;
-      $new-characters: join(
-        $new-characters,
-        to-letter-list(map-get($character-set, "uppercase"))
-      );
+      $returnString: "#{$returnString}#{map.get($character-set,'uppercase')}";
     } @else if $char == "0-9" {
-      $return-default: false;
-      $new-characters: join(
-        $new-characters,
-        to-letter-list(map-get($character-set, "numbers"))
-      );
+      $returnString: "#{$returnString}#{map.get($character-set,'numbers')}";
     } @else if type-of($char) == "string" {
-      $new-characters: append($new-characters, $char);
+      $returnString: "#{$returnString}#{$char}";
     } @else if type-of($char) == "list" {
-      $new-characters: join($new-characters, $char);
+      $returnString: "#{$returnString}#{list-to-str($char,null)}";
     }
   }
-
-  @return $new-characters;
+  @if $return == "list" {
+    @return to-letter-list($returnString);
+  } @else {
+    @return $returnString;
+  }
 }
 
 // Allowed characters function
@@ -148,6 +133,7 @@
     $characters: character-set($characters);
   }
   $new-str: ();
+
   @for $i from 1 through str-length($str) {
     @if index($characters, str-slice($str, $i, $i)) != null {
       $new-str: append($new-str, str-slice($str, $i, $i));

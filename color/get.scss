@@ -16,7 +16,7 @@
 }
 
 @function get-prefix() {
-  @if $prefix != "" {
+  @if length($prefix) > 1 {
     @return "#{$prefix}-";
   } @else {
     @return "";

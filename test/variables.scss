@@ -1,0 +1,15 @@
+@import "../index.scss";
+
+.test {
+  background-color: v(foreground);
+}
+.test {
+  background-color: v(foregroundSomething);
+}
+.test {
+  background-color: v(foreground Something);
+}
+
+.test {
+  background-color: v(dark);
+}
