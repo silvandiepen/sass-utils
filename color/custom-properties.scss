@@ -411,10 +411,10 @@ $_cache_lightmode: null;
 @mixin get-lightmode($shades: (), $theme-colors: $theme-colors) {
   $_mode-colors: ();
   @if $_cache_lightmode {
-    @debug "use cached lightmode";
+    // @debug "use cached lightmode";
     $_mode-colors: $_cache_lightmode;
   } @else {
-    @debug "generate lightmode";
+    // @debug "generate lightmode";
     $_mode-colors: get-mode("light", $shades, $theme-colors);
     $_cache_lightmode: $_mode-colors !global;
   }
@@ -426,10 +426,10 @@ $_cache_lightmode: null;
 @mixin get-darkmode($shades: (), $theme-colors: $theme-colors) {
   $_mode-colors: ();
   @if $_cache_darkmode {
-    @debug "use cached darkmode";
+    // @debug "use cached darkmode";
     $_mode-colors: $_cache_darkmode;
   } @else {
-    @debug "generate darkmode";
+    // @debug "generate darkmode";
     $_mode-colors: get-mode("dark", $shades, $theme-colors);
     $_cache_darkmode: $_mode-colors !global;
   }
