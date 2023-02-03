@@ -1,6 +1,6 @@
 {
   "name": "@sil/sass-utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Sass Utilities",
   "main": "index.scss",
   "scripts": {
