@@ -15,6 +15,7 @@ $default-colors: (
   "dark": #000000,
   "light": #ffffff,
 ) !default;
+$shades: () !default;
 
 $theme-colors: map.merge($colors, $default-colors) !default;
 $all-colors: $theme-colors !default;
@@ -70,7 +71,7 @@ $all-colors: $theme-colors !default;
   }
 }
 
-@function is-var($var, $affix: "") {
+@function _is-var($var, $affix: "") {
   @if $var != "" {
     @if $affix != "" {
       @return "#{$var}-#{$affix}";
@@ -88,19 +89,19 @@ $all-colors: $theme-colors !default;
 
   $v: append(
     $v,
-    _create-variable("#{$name}-h", hue($value), is-var($var, "h"))
+    _create-variable("#{$name}-h", hue($value), _is-var($var, "h"))
   );
   $v: append(
     $v,
-    _create-variable("#{$name}-s", saturation($value), is-var($var, "s"))
+    _create-variable("#{$name}-s", saturation($value), _is-var($var, "s"))
   );
   $v: append(
     $v,
-    _create-variable("#{$name}-l", lightness($value), is-var($var, "l"))
+    _create-variable("#{$name}-l", lightness($value), _is-var($var, "l"))
   );
   $v: append(
     $v,
-    _create-variable("#{$name}-a", opacity($value), is-var($var, "a"))
+    _create-variable("#{$name}-a", opacity($value), _is-var($var, "a"))
   );
   @return $v;
 }
@@ -297,7 +298,6 @@ $all-colors: $theme-colors !default;
         $mix,
         math.percentage(math.div($shade, 100))
       );
-
       $name: "#{$color-name}-#{$shade}";
       $value: $color-shade;
 
@@ -328,7 +328,7 @@ $all-colors: $theme-colors !default;
 }
 @mixin get-color-shades($colors, $shades: (), $mix: black) {
   $shades: _get-color-shades($colors, $shades, $mix);
-
+  // @debug $shades;
   @each $shade in $shades {
     @include create-variable(nth($shade, 1), nth($shade, 2));
   }
@@ -377,7 +377,7 @@ $_cache_lightmode: null;
 //   }
 // }
 
-@function get-mode($mode: "light", $shades: (), $theme-colors: $theme-colors) {
+@function _get-mode($mode: "light", $shades: (), $theme-colors: $theme-colors) {
   $_mode-colors: ();
   @if $mode == "light" {
     $theme-colors: map.merge(
@@ -400,7 +400,15 @@ $_cache_lightmode: null;
     $_mode-colors: append($_mode-colors, $_c);
   }
   @if length($shades) > 0 {
-    @each $_c in _get-color-shades($theme-colors, $shades, $theme-light) {
+    $_theme-mode-colors: ();
+    @if $mode == "light" {
+      $_theme-mode-colors: $theme-light;
+    } @else if $mode == "dark" {
+      $_theme-mode-colors: $theme-dark;
+    }
+
+    @each $_c in _get-color-shades($theme-colors, $shades, $_theme-mode-colors)
+    {
       $_mode-colors: append($_mode-colors, $_c);
     }
   }
@@ -408,14 +416,12 @@ $_cache_lightmode: null;
   @return $_mode-colors;
 }
 
-@mixin get-lightmode($shades: (), $theme-colors: $theme-colors) {
+@mixin get-lightmode($theme-colors: $theme-colors) {
   $_mode-colors: ();
   @if $_cache_lightmode {
-    // @debug "use cached lightmode";
     $_mode-colors: $_cache_lightmode;
   } @else {
-    // @debug "generate lightmode";
-    $_mode-colors: get-mode("light", $shades, $theme-colors);
+    $_mode-colors: _get-mode("light", $shades, $theme-colors);
     $_cache_lightmode: $_mode-colors !global;
   }
   @each $_color in $_mode-colors {
@@ -423,14 +429,14 @@ $_cache_lightmode: null;
   }
 }
 
-@mixin get-darkmode($shades: (), $theme-colors: $theme-colors) {
+@mixin get-darkmode($theme-colors: $theme-colors) {
   $_mode-colors: ();
   @if $_cache_darkmode {
     // @debug "use cached darkmode";
     $_mode-colors: $_cache_darkmode;
   } @else {
     // @debug "generate darkmode";
-    $_mode-colors: get-mode("dark", $shades, $theme-colors);
+    $_mode-colors: _get-mode("dark", $shades, $theme-colors);
     $_cache_darkmode: $_mode-colors !global;
   }
   @each $_color in $_mode-colors {
