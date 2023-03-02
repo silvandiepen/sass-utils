@@ -3,8 +3,12 @@
   "version": "0.0.6",
   "description": "Sass Utilities",
   "main": "index.scss",
+  "exports": {
+    "./build": "./dist/index.js"
+  },
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build && npm run test:js && npm run test",
     "test:js": "jest",
     "test": "npm run test:colors && npm run test:variables",
     "test:colors": "npm run test:colors:rgb && npm run test:colors:hsl && npm run test:colors:prefix",
