@@ -12,11 +12,11 @@
     "test:js": "jest",
     "test": "npm run test:colors && npm run test:variables",
     "test:colors": "npm run test:colors:rgb && npm run test:colors:hsl && npm run test:colors:prefix",
-    "test:colors:rgb": "sass test/colors.rgb.scss output/colors.rgb.css --no-source-map",
-    "test:colors:hsl": "sass test/colors.hsl.scss output/colors.hsl.css --no-source-map",
-    "test:colors:prefix": "sass test/colors.prefix.scss output/colors.prefix.css --no-source-map",
-    "test:variables": "sass test/variables.scss output/variables.css --no-source-map",
-    "test:colors:modes": "sass test/colors.modes.scss output/colors.modes.css --no-source-map"
+    "test:colors:rgb": "sass src/scss/test/colors.rgb.scss output/colors.rgb.css --no-source-map",
+    "test:colors:hsl": "sass src/scss/test/colors.hsl.scss output/colors.hsl.css --no-source-map",
+    "test:colors:prefix": "sass src/scss/test/colors.prefix.scss output/colors.prefix.css --no-source-map",
+    "test:variables": "sass src/scss/test/variables.scss output/variables.css --no-source-map",
+    "test:colors:modes": "sass src/scss/test/colors.modes.scss output/colors.modes.css --no-source-map"
   },
   "keywords": [
     "Sass",

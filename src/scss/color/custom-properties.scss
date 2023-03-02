@@ -379,6 +379,7 @@ $_cache_lightmode: null;
 
 @function _get-mode($mode: "light", $shades: (), $theme-colors: $theme-colors) {
   $_mode-colors: ();
+ 
   @if $mode == "light" {
     $theme-colors: map.merge(
       $theme-colors,
@@ -416,7 +417,7 @@ $_cache_lightmode: null;
   @return $_mode-colors;
 }
 
-@mixin get-lightmode($theme-colors: $theme-colors) {
+@mixin get-lightmode($shades,$theme-colors: $theme-colors) {
   $_mode-colors: ();
   @if $_cache_lightmode {
     $_mode-colors: $_cache_lightmode;
@@ -429,7 +430,7 @@ $_cache_lightmode: null;
   }
 }
 
-@mixin get-darkmode($theme-colors: $theme-colors) {
+@mixin get-darkmode($shades, $theme-colors: $theme-colors) {
   $_mode-colors: ();
   @if $_cache_darkmode {
     // @debug "use cached darkmode";
