@@ -4,4 +4,5 @@ export * from "./shadeColors";
 export * from "./splitColors";
 export * from "./textColors";
 export * from "./cssVariables";
-export * from "./defineBackAndForeground"
+export * from "./defineBackAndForeground";
+export * from "./types";
