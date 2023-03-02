@@ -4,6 +4,8 @@
   "description": "Sass Utilities",
   "main": "index.scss",
   "scripts": {
+    "build": "tsc",
+    "test:js": "jest",
     "test": "npm run test:colors && npm run test:variables",
     "test:colors": "npm run test:colors:rgb && npm run test:colors:hsl && npm run test:colors:prefix",
     "test:colors:rgb": "sass test/colors.rgb.scss output/colors.rgb.css --no-source-map",
@@ -19,6 +21,14 @@
   "author": "Sil van Diepen",
   "license": "MIT",
   "devDependencies": {
-    "sass": "^1.57.1"
+    "@types/jest": "^29.4.0",
+    "jest": "^29.4.3",
+    "sass": "^1.57.1",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@sil/color": "^0.4.6",
+    "jsonto": "^1.0.15"
   }
 }
