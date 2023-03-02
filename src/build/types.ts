@@ -1,9 +1,8 @@
 import { COLOR } from "@sil/color";
-
-export type Color = COLOR;
+export { ColorType, COLOR } from "@sil/color";
 
 export interface ColorData {
-  [key: string]: Color | number;
+  [key: string]: COLOR | number;
 }
 
 export const ColorMode = {

@@ -1,10 +1,10 @@
-import { ColorData, Color, ColorMode } from "./types";
-import { toType, mix, ColorType, toRGB, getLightness, COLOR } from "@sil/color";
+import { ColorData, COLOR, ColorMode } from "./types";
+import { toType, mix, ColorType, toRGB, getLightness } from "@sil/color";
 
 interface ShadeColorsArgs {
   data: ColorData;
   shades: number[];
-  mix?: [Color, Color];
+  mix?: [COLOR, COLOR];
   type?: ColorType;
 }
 
@@ -17,7 +17,7 @@ const defaultShadeColorsArgs: ShadeColorsArgs = {
 
 const defineMixColor = (args: {
   data: ColorData;
-  mixInput: [Color, Color];
+  mixInput: [COLOR, COLOR];
 }) => {
   let mix = args.mixInput[0];
   let altMix = args.mixInput[1];
@@ -78,7 +78,9 @@ export const shadeColors = (args: ShadeColorsArgs): ColorData => {
   return shapeData;
 };
 
-export const asyncShadeColors = async (args: ShadeColorsArgs): Promise<ColorData> => {
+export const asyncShadeColors = async (
+  args: ShadeColorsArgs
+): Promise<ColorData> => {
   const data = shadeColors(args);
   return data;
 };
