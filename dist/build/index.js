@@ -21,4 +21,5 @@ __exportStar(require("./splitColors"), exports);
 __exportStar(require("./textColors"), exports);
 __exportStar(require("./cssVariables"), exports);
 __exportStar(require("./defineBackAndForeground"), exports);
+__exportStar(require("./types"), exports);
 //# sourceMappingURL=index.js.map
