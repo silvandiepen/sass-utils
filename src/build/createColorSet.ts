@@ -1,5 +1,6 @@
 import { COLOR, ColorType } from "@sil/color";
 import { convertToType } from "./convertColors";
+import { asyncDefineBackAndForeground } from "./defineBackAndForeground";
 import { asyncShadeColors } from "./shadeColors";
 import { asyncSplitColors } from "./splitColors";
 import { asyncTextColors } from "./textColors";
@@ -16,7 +17,7 @@ interface CreateColorSetArgs {
     text: boolean;
   };
 }
-const defaultCreateColorSet = {
+const defaultCreateColorSet: CreateColorSetArgs = {
   data: {},
   type: ColorType.HSLA,
   mix: ["#ffffff", "#000000"],
@@ -27,15 +28,32 @@ const defaultCreateColorSet = {
   },
 };
 
+const hello = async (...args: any) => {
+  return args;
+};
+
 export const createColorSet = async (
   args: CreateColorSetArgs
 ): Promise<ColorData> => {
   const config = { ...defaultCreateColorSet, ...args };
 
-  const colorSet = await asyncShadeColors({
-    data: config.data,
-    shades: config.shades,
-  })
+  const colorSet = await hello()
+    .then(async () => {
+      const colors = { ...config.data };
+      const groundData = await asyncDefineBackAndForeground({
+        data: colors,
+        mix: config.mix,
+      });
+      return { ...colors, ...groundData };
+    })
+    .then(async (data) => {
+      const colors = { ...config.data, ...data };
+      const shadeColors = await asyncShadeColors({
+        data: colors,
+        shades: config.shades,
+      });
+      return { ...colors, ...shadeColors };
+    })
     .then(async (data) => {
       const colors = { ...config.data, ...data };
       const textData = await asyncTextColors({ data: colors });
