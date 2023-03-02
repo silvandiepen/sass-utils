@@ -1,0 +1,13 @@
+$colors: (
+  "primary": red,
+  "secondary": blue,
+);
+
+$prefix: "sil";
+$color-type: "rgba";
+
+@import "../index.scss";
+
+:root {
+  @include get-darkmode((0, 25, 50, 75, 100));
+}

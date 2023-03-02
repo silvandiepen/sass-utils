@@ -1,0 +1,26 @@
+@use "sass:map";
+
+$variables: map.merge((), $theme-colors) !default;
+
+@function v($variable, $default: "") {
+  $value: map.get($variables, $variable);
+
+  @if $value {
+    $default: $value;
+  }
+
+  $var: kebabCase(#{get-prefix()}#{$variable});
+
+  @if $default == "" {
+    @return var(--#{$var});
+  } @else {
+    @return var(--#{$var}, $default);
+  }
+}
+
+$settings: () !default;
+
+@function get-setting($setting) {
+  $s: map.get($theme-settings, $setting);
+  @return $s;
+}
